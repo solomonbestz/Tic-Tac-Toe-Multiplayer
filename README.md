@@ -48,25 +48,28 @@ This project enhances the classic Tic Tac Toe game with multiplayer functionalit
 - Close the window to exit the game
 
 ## Network Configuration
-- Default port: 5555 (configurable in the code)
+- Default port: 62743 (configurable in the code)
 - Ensure firewalls allow traffic on the chosen port
 - For local play, use 127.0.0.1 as the server IP
 
 ## Implementation Details
 
 ### Server Responsibilities:
+
 - Maintains game state
 - Validates moves
 - Broadcasts game updates to clients
 - Determines game outcomes
 
 ### Client Responsibilities:
+
 - Displays the game board
 - Sends player moves to the server
 - Receives and renders opponent moves
 - Shows game status messages
 
 ## Troubleshooting
+
 - If connection fails, verify both machines are on the same network
 - Check that firewalls aren't blocking the connection
 - Ensure the server is running before clients attempt to connect
@@ -75,3 +78,7 @@ This project enhances the classic Tic Tac Toe game with multiplayer functionalit
 
 ## License
 This project is open-source and available under the MIT License.
+
+## Tutorial Credit
+
+https://www.youtube.com/@DaFluffyPotato
