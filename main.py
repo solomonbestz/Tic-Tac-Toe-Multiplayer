@@ -1,10 +1,16 @@
 import sys 
+import struct
+import threading
+import socket
 
 import pygame
 
 
 class TicTacToe:
-    def __init__(self) ->None:
+    def __init__(self, host: str ='127.0.0.1', port: int = 62743) ->None:
+        self.host: str = host
+        self.port: str = port
+        self.socket = None
         self.null_char: str = 'n'
         self.board: list = [self.null_char] * 9
 
@@ -132,8 +138,18 @@ class TicTacToe:
         pygame.display.update()
 
         self.clock.tick()
+    
+    def run_listerner(self) -> None:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
+            sock.connect((self.host, self.port))
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
+            sock.settimeout(1)
+            print("Connected", sock)
+            self.socket = sock
 
     def run(self):
+        threading.Thread(target=self.run_listerner).start()
         while True:
             self.update()
 
