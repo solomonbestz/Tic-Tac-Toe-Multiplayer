@@ -1,5 +1,6 @@
 import sys 
 import struct
+import time
 import threading
 import socket
 
@@ -10,6 +11,7 @@ class TicTacToe:
     def __init__(self, host: str ='127.0.0.1', port: int = 62743) ->None:
         self.host: str = host
         self.port: str = port
+        self.kill = False
         self.socket = None
         self.null_char: str = 'n'
         self.board: list = [self.null_char] * 9
@@ -108,6 +110,7 @@ class TicTacToe:
         self.clicked = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.kill = True
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -147,6 +150,12 @@ class TicTacToe:
             sock.settimeout(1)
             print("Connected", sock)
             self.socket = sock
+            while not self.kill:
+                try:
+                    data = self.socket.recv(4096)
+                except socket.timeout:
+                    pass
+            time.sleep(0.001)
 
     def run(self):
         threading.Thread(target=self.run_listerner).start()
