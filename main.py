@@ -83,10 +83,8 @@ class TicTacToe:
         )
     
     def place(self, space_index: int) -> None:
-        if 0 <= space_index < len(self.board):
-            if self.board[space_index] == self.null_char:
-                self.board[space_index] = self.teams[self.turn % 2]
-                self.turn += 1
+        if self.socket:
+            self.socket.sendall(struct.pack('B', space_index))
 
     def get_space(self, pos: tuple) -> str:
         space_index = pos[0] + pos[1] * 3
@@ -142,6 +140,15 @@ class TicTacToe:
 
         self.clock.tick()
     
+    def deserialize(self, data):
+        update_format = 'BB9s'
+        
+        if len(data) >= struct.calcsize(update_format):
+            turn, winner, board = struct.unpack_from('BB9s', data, 0)
+            self.turn = turn
+            self.winner = chr(winner) if chr(winner) != self.null_char else None
+            self.board = list(board.decode('utf-8'))
+
     def run_listerner(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
@@ -153,9 +160,11 @@ class TicTacToe:
             while not self.kill:
                 try:
                     data = self.socket.recv(4096)
+                    if len(data):
+                        self.deserialize(data)
                 except socket.timeout:
                     pass
-            time.sleep(0.001)
+                time.sleep(0.001)
 
     def run(self):
         threading.Thread(target=self.run_listerner).start()

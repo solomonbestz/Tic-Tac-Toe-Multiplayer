@@ -53,7 +53,7 @@ class Server:
     def run_listener(self, conn) -> None:
         self.thread_count += 1
         conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
-        conn.setTimeout(1)
+        conn.settimeout(1)
         with conn:
             while not self.kill:
                 try:
@@ -83,6 +83,7 @@ class Server:
                     print('New Connection: ', conn, addr)
                     if len(self.players) < 2:
                         self.players.append(conn)
+                        threading.Thread(target=self.run_listener, args=(conn,)).start()
                 except socket.timeout:
                     continue
                 time.sleep(0.01)
